@@ -36,6 +36,29 @@ public class TicTacToe {
         }
         clearBoard();
         displayBoard();
+        
+        //remember to reset playerOne and playerTwo moves
+        while (!isWin(playerOne) && !isWin(playerTwo)) {
+            while (!donePlayerOne){
+                playerOneMoveRow = InputHelper.getRangedInt(scan, "Player One, pick a row for your move", 1, 3);
+                playerOneMoveCol = InputHelper.getRangedInt(scan, "Player One, pick a column for your move", 1, 3);
+                if (isValidMove(playerOneMoveRow, playerOneMoveCol)) {
+                    donePlayerOne = true;
+                }
+            }
+            while (!donePlayerTwo){
+                playerTwoMoveRow = InputHelper.getRangedInt(scan, "Player Two, pick a row for your move", 1, 3);
+                playerTwoMoveCol = InputHelper.getRangedInt(scan, "Player Two, pick a column for your move", 1, 3);
+                if (isValidMove(playerTwoMoveRow, playerTwoMoveCol)) {
+                    donePlayerTwo = true;
+                }
+            }
+            if (isWin(playerOne)) {
+                System.out.println("Player One Wins!");
+            } else if (isWin(playerTwo)) {
+                System.out.println("Player Two Wins!");
+            }
+        }
 
         //remember to reset playerOne and playerTwo moves
         while (!isWin(playerOne) && !isWin(playerTwo)) {

@@ -8,9 +8,12 @@ public class TicTacToe {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
 
+        //variables
         String playerOne = "";
         String playerTwo = "";
+        boolean gameDone = false;
         boolean done = false;
+        boolean doneRound = false;
         boolean donePlayerOne = false;
         boolean donePlayerTwo = false;
         int playerOneMoveRow = -1;
@@ -19,83 +22,73 @@ public class TicTacToe {
         int playerTwoMoveCol = -1;
         String temp;
 
+        //Players choose to be X or O and the cleared board is displayed
+        while (!gameDone) {
+            done = false;
+            doneRound = false;
+            while (!done) {
+                temp = InputHelper.getNonZeroLenString(scan, "Player 1, choose X or O");
+                if (temp.equalsIgnoreCase("X")) {
+                    playerOne = "X";
+                    playerTwo = "O";
+                    done = true;
+                } else if (temp.equalsIgnoreCase("O")) {
+                    playerOne = "O";
+                    playerTwo = "X";
+                    done = true;
+                } else {
+                    System.out.println("Invalid");
+                }
+            }
+            clearBoard();
+            displayBoard();
 
-        while (!done) {
-            temp = InputHelper.getNonZeroLenString(scan, "Player 1, choose X or O");
-            if (temp.equalsIgnoreCase("X")) {
-                playerOne = "X";
-                playerTwo = "O";
-                done = true;
-            } else if (temp.equalsIgnoreCase("O")) {
-                playerOne = "O";
-                playerTwo = "X";
-                done = true;
-            } else {
-                System.out.println("Invalid");
-            }
-        }
-        clearBoard();
-        displayBoard();
-        
-        //remember to reset playerOne and playerTwo moves
-        while (!isWin(playerOne) && !isWin(playerTwo)) {
-            while (!donePlayerOne){
-                playerOneMoveRow = InputHelper.getRangedInt(scan, "Player One, pick a row for your move", 1, 3);
-                playerOneMoveCol = InputHelper.getRangedInt(scan, "Player One, pick a column for your move", 1, 3);
-                if (isValidMove(playerOneMoveRow, playerOneMoveCol)) {
-                    donePlayerOne = true;
+            //Players make their moves and boards are updated to have the location on the board as the player's chosen value(X or O)
+            while (!doneRound) {
+                donePlayerOne = false;
+                donePlayerTwo = false;
+                while (!donePlayerOne){
+                    playerOneMoveRow = InputHelper.getRangedInt(scan, "Player One, pick a row for your move", 1, 3);
+                    playerOneMoveCol = InputHelper.getRangedInt(scan, "Player One, pick a column for your move", 1, 3);
+                    if (isValidMove(playerOneMoveRow - 1, playerOneMoveCol - 1)) {
+                        donePlayerOne = true;
+                    } else {
+                        System.out.println("That move is already taken");
+                    }
+                }
+                board[playerOneMoveRow -1][playerOneMoveCol -1] = playerOne;
+                displayBoard();
+                if (isWin(playerOne) || isTie()) {
+                    doneRound = true;
+                    break;
+                }
+                while (!donePlayerTwo){
+                    playerTwoMoveRow = InputHelper.getRangedInt(scan, "Player Two, pick a row for your move", 1, 3);
+                    playerTwoMoveCol = InputHelper.getRangedInt(scan, "Player Two, pick a column for your move", 1, 3);
+                    if (isValidMove(playerTwoMoveRow - 1, playerTwoMoveCol - 1)) {
+                        donePlayerTwo = true;
+                    } else {
+                        System.out.println("That move is already taken");
+                    }
+                }
+                board[playerTwoMoveRow -1][playerTwoMoveCol -1] = playerTwo;
+                displayBoard();
+                if (isWin(playerTwo) || isTie()) {
+                    doneRound = true;
+                    break;
                 }
             }
-            while (!donePlayerTwo){
-                playerTwoMoveRow = InputHelper.getRangedInt(scan, "Player Two, pick a row for your move", 1, 3);
-                playerTwoMoveCol = InputHelper.getRangedInt(scan, "Player Two, pick a column for your move", 1, 3);
-                if (isValidMove(playerTwoMoveRow, playerTwoMoveCol)) {
-                    donePlayerTwo = true;
-                }
-            }
+
             if (isWin(playerOne)) {
                 System.out.println("Player One Wins!");
             } else if (isWin(playerTwo)) {
                 System.out.println("Player Two Wins!");
+            } else if (isTie()) {
+                System.out.println("You Tied!");
             }
+
+            gameDone = InputHelper.getYNConfirm(scan, "Would you like to play again?(Y/N)");
         }
-
-        //remember to reset playerOne and playerTwo moves
-        while (!isWin(playerOne) && !isWin(playerTwo)) {
-            while (!donePlayerOne){
-                playerOneMoveRow = InputHelper.getRangedInt(scan, "Player One, pick a row for your move", 1, 3);
-                playerOneMoveCol = InputHelper.getRangedInt(scan, "Player One, pick a column for your move", 1, 3);
-                if (isValidMove(playerOneMoveRow, playerOneMoveCol)) {
-                    donePlayerOne = true;
-                }
-            }
-            board[playerOneMoveRow][playerOneMoveCol] = playerOne;
-            playerOneMoveCol = -1;
-            playerOneMoveRow = -1;
-            while (!donePlayerTwo){
-                playerTwoMoveRow = InputHelper.getRangedInt(scan, "Player Two, pick a row for your move", 1, 3);
-                playerTwoMoveCol = InputHelper.getRangedInt(scan, "Player Two, pick a column for your move", 1, 3);
-                if (isValidMove(playerTwoMoveRow, playerTwoMoveCol)) {
-                    donePlayerTwo = true;
-                }
-            }
-            board[playerTwoMoveRow][playerTwoMoveCol] = playerTwo;
-            playerTwoMoveCol = -1;
-            playerTwoMoveRow = -1;
-            if (isWin(playerOne)) {
-                System.out.println("Player One Wins!");
-            } else if (isWin(playerTwo)) {
-                System.out.println("Player Two Wins!");
-            }
-        }
-
-        //When asking each player for their move, ask them for a row [1-3] and column [1-3]. These values will need to be shifted since the indices start at 0.
-        //Your InputHelper methods should be utilized to ensure that valid values within the given range are collected.
-        //Any time a player makes a move, your program should check to see if a win or tie has occurred. Keep in mind that you will write multiple methods to check for different types of wins.
-        //Your program should display the new board any time a player makes a move.
-        //When a tie or win occurs, the game should stop and display a message declaring the winner.
-        //Your program should then ask the user if they would like to play another game.
-
     }
 
     private static void clearBoard(){
@@ -125,33 +118,72 @@ public class TicTacToe {
 
     private static boolean isWin(String player){
         boolean win = false;
-        //checks to see if there is a win state on the current board for the specified player (X or O)
-        // This method in turn calls three additional methods (isColWin, isRowWin, isDiagonalWin) that break down the 3 kinds of wins that are possible.
+        if (isColWin(player) || isRowWin(player) || isDiagonalWin(player)) {
+            win = true;
+        }
         return win;
     }
 
     private static boolean isColWin(String player){
         boolean colWin = false;
-        //checks for a col win for specified player
+        int counter = 0;
+        for (int j = 0; j < board[0].length; j++) {
+            counter = 0;
+            for (int i = 0; i < board.length; i++) {
+                if (board[j][i].equals(player)) {
+                    counter++;
+                }
+                if (counter == 3) {
+                    colWin = true;
+                    break;
+                }
+            }
+        }
         return colWin;
     }
 
     private static boolean isRowWin(String player){
         boolean rowWin = false;
-        //checks for a row win for the specified player
+        int counter = 0;
+        for (int j = 0; j < board[0].length; j++) {
+            counter = 0;
+            for (int i = 0; i < board.length; i++) {
+                if (board[i][j].equals(player)) {
+                    counter++;
+                }
+                if (counter == 3) {
+                    rowWin = true;
+                    break;
+                }
+            }
+        }
         return rowWin;
     }
 
     private static boolean isDiagonalWin(String player){
         boolean diagWin = false;
-        //checks for a diagonal win for the specified player
+        if (board[0][0].equals(player) && board[2][2].equals(player) && board[1][1].equals(player)) {
+            diagWin = true;
+        } else if (board[2][0].equals(player) && board[0][2].equals(player) && board[1][1].equals(player)) {
+            diagWin = true;
+        }
         return diagWin;
     }
 
     private static boolean isTie(){
         boolean tie = false;
-        //checks for a tie condition: all spaces on the board are filled and no win has occurred
+        int counter = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j].equals("-")) {
+                    counter++;
+                    break;
+                }
+            }
+        }
+        if (counter == 0) {
+            tie = true;
+        }
         return tie;
     }
-
 }

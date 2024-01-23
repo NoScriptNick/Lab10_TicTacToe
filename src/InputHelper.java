@@ -155,9 +155,9 @@ public class InputHelper {
             }
         } while (!done);
         if (YN.equals("N")) {
-            return false;
-        } else {
             return true;
+        } else {
+            return false;
         }
     }
 
@@ -186,5 +186,3 @@ public class InputHelper {
         }
     }
 }
-
-
